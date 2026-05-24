@@ -7,26 +7,19 @@ type FormState = "idle" | "submitting" | "success" | "error";
 
 export default function BetaForm() {
   const { t } = useLanguage();
-  const f = t.betaForm;
+  const b = t.betaForm;
+  const f = b.form;
 
   const [formState, setFormState] = useState<FormState>("idle");
-  const [fields, setFields] = useState({
-    name: "",
-    email: "",
-    company: "",
-    message: "",
-  });
+  const [fields, setFields] = useState({ name: "", email: "", company: "", message: "" });
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormState("submitting");
-
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -44,95 +37,103 @@ export default function BetaForm() {
     }
   }
 
+  const inputCls =
+    "w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30";
+
   return (
-    <section id="beta" className="bg-gradient-to-br from-indigo-600 to-purple-700 px-6 py-24">
+    <section id="beta" className="bg-zinc-950 px-6 py-28">
+      {/* Subtle top border accent */}
+      <div className="mx-auto mb-16 max-w-5xl">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+      </div>
+
       <div className="mx-auto max-w-5xl">
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div className="grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+
           {/* Left: pitch */}
-          <div className="text-white">
-            <h2 className="mb-4 text-4xl font-extrabold">{f.title}</h2>
-            <p className="mb-8 text-lg text-indigo-100">{f.subtitle}</p>
-            <ul className="space-y-3">
-              {f.benefits.map((b) => (
-                <li key={b} className="text-indigo-100">
-                  {b}
+          <div>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-indigo-400">
+              {b.eyebrow}
+            </p>
+            <h2 className="mb-5 text-4xl font-bold tracking-tight text-white">
+              {b.title}
+            </h2>
+            <p className="mb-10 text-base leading-relaxed text-zinc-400">{b.subtitle}</p>
+            <ul className="space-y-4">
+              {b.benefits.map((benefit, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-400">
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </span>
+                  <span className="text-sm text-zinc-300">{benefit}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Right: form */}
-          <div className="rounded-2xl bg-white p-8 shadow-2xl">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
             {formState === "success" ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <span className="mb-4 text-5xl">🎉</span>
-                <p className="text-lg font-semibold text-gray-800">{f.form.success}</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15">
+                  <svg className="h-7 w-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </div>
+                <p className="text-lg font-semibold text-white">{f.success}</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {f.name} <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text" name="name" value={fields.name}
+                      onChange={handleChange} placeholder={f.namePlaceholder}
+                      required className={inputCls}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {f.email} <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="email" name="email" value={fields.email}
+                      onChange={handleChange} placeholder={f.emailPlaceholder}
+                      required className={inputCls}
+                    />
+                  </div>
+                </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    {f.form.name} <span className="text-red-500">*</span>
-                  </label>
+                  <label className="mb-1.5 block text-xs font-medium text-zinc-400">{f.company}</label>
                   <input
-                    type="text"
-                    name="name"
-                    value={fields.name}
-                    onChange={handleChange}
-                    placeholder={f.form.namePlaceholder}
-                    required
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                    type="text" name="company" value={fields.company}
+                    onChange={handleChange} placeholder={f.companyPlaceholder}
+                    className={inputCls}
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    {f.form.email} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={fields.email}
-                    onChange={handleChange}
-                    placeholder={f.form.emailPlaceholder}
-                    required
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    {f.form.company}
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={fields.company}
-                    onChange={handleChange}
-                    placeholder={f.form.companyPlaceholder}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    {f.form.message}
-                  </label>
+                  <label className="mb-1.5 block text-xs font-medium text-zinc-400">{f.message}</label>
                   <textarea
-                    name="message"
-                    value={fields.message}
-                    onChange={handleChange}
-                    placeholder={f.form.messagePlaceholder}
+                    name="message" value={fields.message}
+                    onChange={handleChange} placeholder={f.messagePlaceholder}
                     rows={4}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 resize-none"
+                    className={`${inputCls} resize-none`}
                   />
                 </div>
                 {formState === "error" && (
-                  <p className="text-sm text-red-600">{f.form.error}</p>
+                  <p className="text-sm text-red-400">{f.error}</p>
                 )}
                 <button
                   type="submit"
                   disabled={formState === "submitting"}
-                  className="w-full rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+                  className="w-full rounded-xl bg-indigo-500 py-3.5 text-sm font-semibold text-white transition-all hover:bg-indigo-400 disabled:opacity-50"
                 >
-                  {formState === "submitting" ? f.form.submitting : f.form.submit}
+                  {formState === "submitting" ? f.submitting : f.submit}
                 </button>
               </form>
             )}
